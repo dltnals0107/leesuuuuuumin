@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>기초 활력징후 평가기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #aaa;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c7a7b;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #2c7a7b;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e6fffa;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>기초 활력징후 평가</h1>
+
+    <label>체온 (℃)</label>
+    <input type="number" id="temp" step="0.1" placeholder="예: 36.5">
+
+    <label>심박수 (회/분)</label>
+    <input type="number" id="pulse" placeholder="예: 75">
+
+    <label>호흡수 (회/분)</label>
+    <input type="number" id="resp" placeholder="예: 16">
+
+    <label>혈압 (수축기/이완기 mmHg)</label>
+    <input type="text" id="bp" placeholder="예: 120/80">
+
+    <button id="evaluateButton">평가하기</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById("evaluateButton").addEventListener("click", evaluate);
+
+    function evaluate() {
+      const tempVal = document.getElementById("temp").value;
+      const pulseVal = document.getElementById("pulse").value;
+      const respVal = document.getElementById("resp").value;
+      const bpVal = document.getElementById("bp").value;
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "";
+
+      // 모든 값이 입력되었는지 체크
+      if (!tempVal || !pulseVal || !respVal || !bpVal) {
+        resultDiv.innerHTML = "<p style='color:red;'>모든 값을 입력해주세요.</p>";
+        return;
+      }
+
+      const temp = parseFloat(tempVal);
+      const pulse = parseInt(pulseVal);
+      const resp = parseInt(respVal);
+      const bpParts = bpVal.split("/");
+
+      // 혈압 형식이 올바른지 체크 (수축기/이완기)
+      if (bpParts.length !== 2 || isNaN(bpParts[0]) || isNaN(bpParts[1])) {
+        resultDiv.innerHTML = "<p style='color:red;'>혈압 형식은 120/80처럼 입력해주세요.</p>";
+        return;
+      }
+
+      const sys = parseInt(bpParts[0]);
+      const dia = parseInt(bpParts[1]);
+
+      let result = "<h3>🩺 평가 결과:</h3>";
+
+      // 체온 평가
+      if (temp < 36.0) result += "🌡️ 체온: 저체온입니다.<br>";
+      else if (temp > 37.5) result += "🌡️ 체온: 발열이 있습니다.<br>";
+      else result += "🌡️ 체온: 정상 범위입니다.<br>";
+
+      // 심박수 평가
+      if (pulse < 60) result += "❤️ 심박수: 서맥입니다 (느림).<br>";
+      else if (pulse > 100) result += "❤️ 심박수: 빈맥입니다 (빠름).<br>";
+      else result += "❤️ 심박수: 정상 범위입니다.<br>";
+
+      // 호흡수 평가
+      if (resp < 12) result += "💨 호흡수: 저호흡입니다.<br>";
+      else if (resp > 20) result += "💨 호흡수: 과호흡입니다.<br>";
+      else result += "💨 호흡수: 정상 범위입니다.<br>";
+
+      // 혈압 평가
+      if (sys < 90 || dia < 60) result += "🩸 혈압: 저혈압입니다.<br>";
+      else if (sys > 140 || dia > 90) result += "🩸 혈압: 고혈압입니다.<br>";
+      else result += "🩸 혈압: 정상 범위입니다.<br>";
+
+      resultDiv.innerHTML = result;
+    }
+  </script>
+</body>
+</html>
